@@ -54,6 +54,7 @@ export function ProdutoPage() {
       message:
         "Tem certeza de que deseja excluir esse produto? Você não poderá mais usá-lo.",
       labelLeftButton: "Não",
+      onClickLeftButton: () => {},
       labelRightButton: "Sim",
       onClickRightButton: async () => {
         await api.delete(`/produtos/${id}`);
@@ -112,7 +113,9 @@ export function ProdutoPage() {
                 </Grid>
 
                 <Grid size={12}>
-                  <div className="flex flex-col gap-4 md:flex-row justify-between">
+                  <div
+                    className={`flex flex-row gap-4 ${!id ? "justify-end" : "justify-between"} my-12`}
+                  >
                     <Btn
                       hidden={!id}
                       variant="secondary"

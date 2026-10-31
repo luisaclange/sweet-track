@@ -2,6 +2,7 @@ import {
   BarChart,
   CalendarMonth,
   ChevronLeft,
+  Delete,
   Edit,
   Favorite,
   FavoriteBorder,
@@ -109,6 +110,22 @@ export function LotePage() {
     }
   };
 
+  const handleDeleteLote = () => {
+    showAlert({
+      variant: "warning",
+      title: "Excluir lote",
+      message:
+        "Tem certeza de que deseja excluir esse lote? Você não poderá mais usá-lo.",
+      labelLeftButton: "Não",
+      onClickLeftButton: () => {},
+      labelRightButton: "Sim",
+      onClickRightButton: async () => {
+        await api.delete(`/lotes/${id}`);
+        navigate(`/`);
+      },
+    });
+  };
+
   const handleBack = () => {
     navigate("/");
   };
@@ -188,7 +205,10 @@ export function LotePage() {
                     className="h-fit"
                     onClick={() => setIsEdit(!isEdit)}
                   >
-                    <Edit className="text-blue-300" />
+                    <Edit className="text-blue-400" />
+                  </IconButton>
+                  <IconButton className="h-fit" onClick={handleDeleteLote}>
+                    <Delete className="text-red-400" />
                   </IconButton>
                 </div>
               </div>

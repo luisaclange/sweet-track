@@ -1,4 +1,4 @@
-import { ChevronLeft, DeleteOutline } from "@mui/icons-material";
+import { ChevronLeft, Delete } from "@mui/icons-material";
 import { Card, CardContent, Container, Grid, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -64,6 +64,22 @@ export function PedidoPage() {
   const produtosRestantes = produtos.filter(
     (prod) => !items.some((item) => String(item.produtoId) === String(prod.id)),
   );
+
+  const handleDeletePedido = async () => {
+    showAlert({
+      variant: "warning",
+      title: "Excluir pedido",
+      message:
+        "Tem certeza de que deseja excluir esse pedido? Você não poderá mais usá-lo.",
+      labelLeftButton: "Não",
+      onClickLeftButton: () => {},
+      labelRightButton: "Sim",
+      onClickRightButton: async () => {
+        await api.delete(`/pedidos/${id}`);
+        navigate(`/lote?id=${loteId}`);
+      },
+    });
+  };
 
   useEffect(() => {
     setIsLoadingPage(true);
@@ -224,7 +240,7 @@ export function PedidoPage() {
                             size="large"
                             onClick={() => remove(index)}
                           >
-                            <DeleteOutline />
+                            <Delete />
                           </IconButton>
                         </div>
                       </CardContent>
@@ -249,12 +265,18 @@ export function PedidoPage() {
                 )}
               </div>
 
-              <div className="flex flex-row gap-4 justify-end my-12">
+              <div
+                className={`flex flex-row gap-4 ${!id ? "justify-end" : "justify-between"} my-12`}
+              >
                 <Btn
-                  type="submit"
-                  isLoading={isLoading || isSubmitting}
-                  className="w-full max-w-56 min-h-14"
+                  hidden={!id}
+                  variant="secondary"
+                  color="error"
+                  onClick={handleDeletePedido}
                 >
+                  Excluir
+                </Btn>
+                <Btn type="submit" isLoading={isLoading || isSubmitting}>
                   Salvar
                 </Btn>
               </div>

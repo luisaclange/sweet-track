@@ -30,6 +30,11 @@ import type { IPedido } from "~/types/pedido.type";
 import type { IProduto } from "~/types/produto.type";
 import { parseDate } from "~/utils/parseDate";
 import { FooterApp } from "~/components/FooterApp";
+import { Input } from "~/components/Input";
+import { useForm } from "react-hook-form";
+import { Btn } from "~/components/Btn";
+import { useAlert } from "~/context/AlertContext";
+import { defaultErrorMessage } from "~/utils/defaultErrorMessage";
 
 interface IResLote extends ILote {
   createdAt: Date;
@@ -42,7 +47,18 @@ export function LotePage() {
   const id = searchParams.get("id");
   const edit = searchParams.get("edit");
 
+  const {
+    control,
+    handleSubmit,
+    setValues,
+    formState: { isSubmitting },
+  } = useForm<IResLote>({
+    mode: "onTouched",
+    defaultValues: {},
+  });
+
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   const [lote, setLote] = useState<IResLote>();
   const [isLoading, setIsLoading] = useState(false);
@@ -56,18 +72,19 @@ export function LotePage() {
     }[]
   >([]);
   const [isEdit, setIsEdit] = useState<boolean>(edit == "true");
-  const [errorMessage, setErrorMessage] = useState<string>();
 
-  const handleSaveLote = async () => {
+  const handleSaveLote = async (data: IResLote) => {
     try {
-      if (!lote?.titulo) {
-        setErrorMessage("Campo obrigatório");
-      }
       setIsLoading(true);
-      await api.put(`/lotes/${id}`, lote);
+      await api.put(`/lotes/${id}`, {
+        titulo: data.titulo,
+        data_inicio: data.data_inicio,
+        data_fim: data.data_fim,
+      });
+      setLote(data);
       setIsEdit(false);
     } catch (error) {
-      console.error(error);
+      showAlert(defaultErrorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +96,10 @@ export function LotePage() {
       await api.put(`/lotes/${id}`, { favorito: !lote?.favorito });
       setLote({
         ...lote!,
+        favorito: !lote?.favorito!,
+      });
+      setValues({
+        ...lote,
         favorito: !lote?.favorito!,
       });
     } catch (error) {
@@ -123,6 +144,7 @@ export function LotePage() {
         .then((data) => {
           const [resLote, resProdutos] = data;
           setLote(resLote.data);
+          setValues(resLote.data);
           setProdutos(resProdutos.data);
           getResume(resProdutos.data, resLote.data.pedidos);
         })
@@ -164,75 +186,62 @@ export function LotePage() {
                   </IconButton>
                   <IconButton
                     className="h-fit"
-                    color="secondary"
                     onClick={() => setIsEdit(!isEdit)}
                   >
-                    <Edit />
+                    <Edit className="text-blue-300" />
                   </IconButton>
                 </div>
               </div>
               {isEdit ? (
-                <div className="pt-8">
-                  <Grid container spacing={{ xs: 2, md: 4 }}>
-                    <Grid size={12} className="flex flex-col">
-                      <TextField
-                        value={lote?.titulo}
-                        label="Titulo"
-                        placeholder="Digite aqui"
-                        color="secondary"
-                        onChange={(e) => {
-                          setLote({ ...lote!, titulo: e.target.value });
-                          if (!e.target.value) {
-                            setErrorMessage("Campo obrigatório");
-                          } else {
-                            setErrorMessage(undefined);
-                          }
-                        }}
-                        error={!!errorMessage}
-                      />
-                      {!!errorMessage ? (
-                        <div className="mt-1 text-red-500">{errorMessage}</div>
-                      ) : null}
-                    </Grid>
+                <form
+                  onSubmit={handleSubmit(handleSaveLote)}
+                  className="h-full flex flex-col gap-8"
+                >
+                  <div className="pt-8">
+                    <Grid container spacing={{ xs: 2, md: 4 }}>
+                      <Grid size={12} className="flex flex-col">
+                        <Input
+                          name="titulo"
+                          label="Titulo"
+                          placeholder="Digite aqui"
+                          color="secondary"
+                          control={control}
+                          rules={{
+                            required: "Campo obrigatório",
+                          }}
+                        />
+                      </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
-                      <TextField
-                        label="Data início"
-                        type="date"
-                        InputLabelProps={{ shrink: true }}
-                        value={lote?.data_inicio}
-                        color="secondary"
-                        onChange={(e) =>
-                          setLote({ ...lote!, data_inicio: e.target.value })
-                        }
-                      />
-                    </Grid>
+                      <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
+                        <Input
+                          name="data_inicio"
+                          label="Data início"
+                          type="date"
+                          InputLabelProps={{ shrink: true }}
+                          color="secondary"
+                          control={control}
+                        />
+                      </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
-                      <TextField
-                        label="Data fim"
-                        type="date"
-                        InputLabelProps={{ shrink: true }}
-                        value={lote?.data_fim}
-                        color="secondary"
-                        onChange={(e) =>
-                          setLote({ ...lote!, data_fim: e.target.value })
-                        }
-                      />
-                    </Grid>
+                      <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
+                        <Input
+                          name="data_fim"
+                          label="Data fim"
+                          type="date"
+                          InputLabelProps={{ shrink: true }}
+                          color="secondary"
+                          control={control}
+                        />
+                      </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
-                      <Button
-                        className="h-full min-h-14"
-                        variant="contained"
-                        loading={isLoading}
-                        onClick={handleSaveLote}
-                      >
-                        <b>Salvar</b>
-                      </Button>
+                      <Grid size={{ xs: 12, md: 4 }} className="flex flex-col">
+                        <Btn loading={isLoading} type="submit">
+                          Salvar
+                        </Btn>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </div>
+                  </div>
+                </form>
               ) : !!lote?.data_fim && !!lote?.data_inicio ? (
                 <div className="flex flex-row gap-4">
                   <CalendarMonth className="mr-2" />

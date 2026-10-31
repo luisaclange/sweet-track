@@ -2,7 +2,7 @@
 
 Projeto de extensão desenvolvido durante o curso de Ciência da Computação - UNOPAR.
 
-Trata-se de um sistema simples e intuitivo para gestão de pedidos em uma pequena empresa de doces caseiros.
+Trata-se de um sistema simples e intuitivo para gestão de pedidos para pequenos empreendimentos de venda de produtos, mais voltado para a área de doces caseiros.
 
 ## Como funciona?
 

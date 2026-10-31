@@ -1,47 +1,42 @@
 import { ChevronLeft } from "@mui/icons-material";
-import {
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Grid,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Container, Grid, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router";
 import { AppBar } from "~/components/AppBar";
+import { Btn } from "~/components/Btn";
 import { FooterApp } from "~/components/FooterApp";
+import { Input } from "~/components/Input";
 import { LoaderPage } from "~/components/LoaderPage";
+import { useAlert } from "~/context/AlertContext";
 import api from "~/services/axios";
 import type { IProduto } from "~/types/produto.type";
 
 export function ProdutoPage() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const {
+    control,
+    handleSubmit,
+    setValues,
+    formState: { isSubmitting },
+  } = useForm<IProduto>({
+    mode: "onTouched",
+    defaultValues: {},
+  });
 
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
-  const [produto, setProduto] = useState<IProduto>();
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpenDialog, setIsOpenDialog] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>();
 
-  const handleSaveProduto = async () => {
+  const handleSaveProduto = async (data: IProduto) => {
     try {
-      if (!produto?.nome) {
-        setErrorMessage("Campo obrigatório");
-        return;
-      }
-
       if (id) {
-        await api.put(`/produtos/${id}`, produto);
+        await api.put(`/produtos/${id}`, data);
       } else {
-        await api.post(`/produtos`, produto);
+        await api.post(`/produtos`, data);
       }
 
       navigate("/");
@@ -53,9 +48,18 @@ export function ProdutoPage() {
   };
 
   const handleDeleteProduto = async () => {
-    setIsOpenDialog(false);
-    await api.delete(`/produtos/${id}`);
-    navigate("/");
+    showAlert({
+      variant: "warning",
+      title: "Excluir produto",
+      message:
+        "Tem certeza de que deseja excluir esse produto? Você não poderá mais usá-lo.",
+      labelLeftButton: "Não",
+      labelRightButton: "Sim",
+      onClickRightButton: async () => {
+        await api.delete(`/produtos/${id}`);
+        navigate("/");
+      },
+    });
   };
 
   const handleRedirectHome = () => {
@@ -68,7 +72,7 @@ export function ProdutoPage() {
       Promise.all([api.get(`/produtos/${id}`)])
         .then((data) => {
           const [resProduto] = data;
-          setProduto(resProduto.data);
+          setValues(resProduto.data);
         })
         .finally(() => {
           setIsLoadingPage(false);
@@ -91,76 +95,44 @@ export function ProdutoPage() {
               <h1>{id ? "Editar produto" : "Novo produto"}</h1>
             </div>
 
-            <Grid container spacing={{ xs: 2, md: 4 }}>
-              <Grid size={12} className="flex flex-col">
-                <TextField
-                  label="Nome"
-                  error={!!errorMessage}
-                  value={produto?.nome}
-                  onChange={(e) => {
-                    setProduto({ ...produto!, nome: e.target.value });
-                    if (!e.target.value) {
-                      setErrorMessage("Campo obrigatório");
-                    } else {
-                      setErrorMessage(undefined);
-                    }
-                  }}
-                />
-                {!!errorMessage ? (
-                  <div className="mt-1 text-red-500">{errorMessage}</div>
-                ) : null}
-              </Grid>
+            <form
+              onSubmit={handleSubmit(handleSaveProduto)}
+              className="h-full flex flex-col gap-8"
+            >
+              <Grid container spacing={{ xs: 2, md: 4 }}>
+                <Grid size={12} className="flex flex-col">
+                  <Input
+                    name="nome"
+                    label="Nome"
+                    control={control}
+                    rules={{
+                      required: "Campo obrigatório",
+                    }}
+                  />
+                </Grid>
 
-              <Grid size={12}>
-                <div className="flex flex-col gap-4 md:flex-row justify-between">
-                  <Button
-                    hidden={!id}
-                    className="w-full md:max-w-56 min-h-14"
-                    variant="outlined"
-                    onClick={() => setIsOpenDialog(true)}
-                  >
-                    Excluir
-                  </Button>
-                  <Button
-                    variant="contained"
-                    className="w-full md:max-w-56 min-h-14"
-                    loading={isLoading}
-                    onClick={handleSaveProduto}
-                  >
-                    <b>Salvar</b>
-                  </Button>
-                </div>
+                <Grid size={12}>
+                  <div className="flex flex-col gap-4 md:flex-row justify-between">
+                    <Btn
+                      hidden={!id}
+                      variant="secondary"
+                      color="error"
+                      onClick={handleDeleteProduto}
+                    >
+                      Excluir
+                    </Btn>
+                    <Btn loading={isLoading} type="submit">
+                      Salvar
+                    </Btn>
+                  </div>
+                </Grid>
               </Grid>
-            </Grid>
+            </form>
           </div>
         )}
       </Container>
 
       <FooterApp />
-
-      <Dialog
-        open={isOpenDialog}
-        onClose={() => setIsOpenDialog(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Tem certeza de que deseja excluir esse produto?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <span className="text-[#f4f6fc]">Você não poderá mais usá-lo</span>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsOpenDialog(false)}>
-            <b>Cancelar</b>
-          </Button>
-          <Button variant="contained" onClick={handleDeleteProduto} autoFocus>
-            <b>Sim</b>
-          </Button>
-        </DialogActions>
-      </Dialog>
     </section>
   );
 }

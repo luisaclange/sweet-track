@@ -84,7 +84,7 @@ export function CadastroPage() {
 
   return (
     <section className="h-full">
-      <Container maxWidth="lg" className="h-full">
+      <Container maxWidth="lg" className="h-screen">
         <div className="flex flex-col items-center justify-center h-full">
           <Card
             className="h-fit min-h-48 w-full rounded-2xl max-w-xl bg-[#19273170]"

@@ -89,8 +89,12 @@ export function ProdutoPage() {
           <LoaderPage />
         ) : (
           <div className="flex flex-col gap-8">
-            <div className="flex flex-row items-center gap-4">
-              <IconButton color="secondary" onClick={handleRedirectHome}>
+            <div className="flex flex-row items-center gap-2 md:gap-4">
+              <IconButton
+                color="secondary"
+                size="small"
+                onClick={handleRedirectHome}
+              >
                 <ChevronLeft fontSize="large" />
               </IconButton>
               <h1>{id ? "Editar produto" : "Novo produto"}</h1>

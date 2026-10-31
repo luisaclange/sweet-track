@@ -59,7 +59,7 @@ export const AppBar = () => {
           onClick={handleRedirectHome}
         >
           <img src={logo} width="100px" />
-          <b style={{ fontFamily: "Lora" }} className="text-4xl">
+          <b style={{ fontFamily: "Lora" }} className="text-2xl md:text-4xl">
             Sweet Track
           </b>
         </div>

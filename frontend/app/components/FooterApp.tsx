@@ -15,7 +15,7 @@ export const FooterApp = () => {
           <img src={logo} width="80px" />
         </div>
 
-        <span className="text-sm">
+        <span className="text-sm text-center">
           © {new Date().getFullYear()} Sweet Track. Todos os direitos
           reservados.
         </span>

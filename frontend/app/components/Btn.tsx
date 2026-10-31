@@ -20,7 +20,7 @@ export function Btn({
   return (
     <Button
       {...rest}
-      className={`h-full min-h-14 ${rest.className}`}
+      className={`h-full min-h-10 md:min-h-14 ${rest.className}`}
       variant={variant == "primary" ? "contained" : "outlined"}
       color={color}
       disabled={isLoading}

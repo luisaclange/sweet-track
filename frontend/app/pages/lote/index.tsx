@@ -180,14 +180,25 @@ export function LotePage() {
         ) : (
           <div className="flex flex-col gap-16">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-row justify-between items-center">
-                <div className="flex flex-row items-center gap-4">
-                  <IconButton onClick={handleBack}>
-                    <ChevronLeft fontSize="large" color="secondary" />
-                  </IconButton>
-                  <h1>{lote?.titulo}</h1>
+              <div className="flex w-full flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <div className="flex flex-row items-start gap-2 md:gap-4">
+                    <IconButton onClick={handleBack} size="small">
+                      <ChevronLeft fontSize="large" color="secondary" />
+                    </IconButton>
+                    <h1 className="break-all mt-1">{lote?.titulo}</h1>
+                  </div>
+
+                  {!!lote?.data_fim && !!lote?.data_inicio && !isEdit ? (
+                    <div className="flex flex-row gap-4 md:hidden mt-2">
+                      <CalendarMonth className="mr-2" />
+                      <b>{`${parseDate(lote.data_inicio)} à ${parseDate(lote.data_fim)}`}</b>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-col md:flex-row gap-2">
                   <IconButton
                     color="primary"
                     className="h-fit"
@@ -263,7 +274,7 @@ export function LotePage() {
                   </div>
                 </form>
               ) : !!lote?.data_fim && !!lote?.data_inicio ? (
-                <div className="flex flex-row gap-4">
+                <div className="flex-row gap-4 hidden md:flex">
                   <CalendarMonth className="mr-2" />
                   <b>{`${parseDate(lote.data_inicio)} à ${parseDate(lote.data_fim)}`}</b>
                 </div>

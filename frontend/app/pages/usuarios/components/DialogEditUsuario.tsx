@@ -91,11 +91,21 @@ export function DialogEditUsuario({
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          padding: "16px !important",
+        }}
+      >
         <PeopleAlt className="mr-2 -mt-1" />
         <b className="text-2xl">Editar usuário</b>
       </DialogTitle>
-      <DialogContent id="alert-dialog-description">
+      <DialogContent
+        sx={{
+          padding: "16px !important",
+        }}
+        id="alert-dialog-description"
+      >
         <form
           onSubmit={handleSubmit(handleEditUsuario)}
           className="h-full flex flex-col gap-8"

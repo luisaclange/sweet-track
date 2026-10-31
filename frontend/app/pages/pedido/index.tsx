@@ -156,8 +156,12 @@ export function PedidoPage() {
           <LoaderPage />
         ) : (
           <div>
-            <div className="flex flex-row items-center gap-4">
-              <IconButton color="secondary" onClick={handleRedirectLote}>
+            <div className="flex flex-row items-center gap-2 md:gap-4">
+              <IconButton
+                color="secondary"
+                size="small"
+                onClick={handleRedirectLote}
+              >
                 <ChevronLeft fontSize="large" />
               </IconButton>
 

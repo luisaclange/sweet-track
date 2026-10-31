@@ -54,11 +54,20 @@ export function DialogNovoLote({
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle
+        sx={{
+          padding: "16px !important",
+        }}
+        id="alert-dialog-title"
+      >
         <Inventory className="mr-2 -mt-1" />
         <b className="text-2xl">Novo lote</b>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          padding: "16px !important",
+        }}
+      >
         <form
           onSubmit={handleSubmit(handleCreateLote)}
           className="h-full flex flex-col gap-8"

@@ -42,7 +42,12 @@ export const AlertMessage = ({
         setIsOpen(false);
       }}
     >
-      <DialogTitle id="alert-dialog-title">
+      <DialogTitle
+        id="alert-dialog-title"
+        sx={{
+          padding: "16px !important",
+        }}
+      >
         {variant == "info" ? (
           <Info className="mr-4 -mt-1 text-blue-400" />
         ) : variant == "error" ? (
@@ -56,13 +61,21 @@ export const AlertMessage = ({
         )}
         {title}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          padding: "16px !important",
+        }}
+      >
         <DialogContentText id="alert-dialog-description">
           <span className="text-[#f4f6fc]">{message}</span>
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <div className="w-full flex flex-row justify-between p-2">
+      <DialogActions
+        sx={{
+          padding: "16px !important",
+        }}
+      >
+        <div className="w-full flex flex-row justify-between">
           {onClickLeftButton ? (
             <Btn
               variant="secondary"
